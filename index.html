@@ -42,26 +42,43 @@
       </form>
       <div class="weather-status text-white text-center">
         <img src="https://openweathermap.org/img/wn/02d@2x.png" alt="" />
-        <h1 id="city-name">Dhaka</h1>
-        <h3><span>38.06</span>&deg;C</h3>
-        <h1 class="lead">Clouds</h1>
+        <h1 id="city-name"></h1>
+        <h3><span id="show_temperature">0</span>&deg;C</h3>
+        <h1 id="weather_status" class="lead"></h1>
       </div>
     </div>
 
     <script>
       const api = {
         key: "f9f5e0b32f152af39ee9699beee4adcb",
-        base: "https://api.openweathermap.org/data/2.5/",
-        city: "Dhaka",
+        base: "https://api.openweathermap.org/data/2.5/weather",
       };
-      fetch(`${api.base}weather?q=${api.city}&appid=${api.key}`)
-        .then((response) => response.json())
-        .then((json) => console.log(json));
+      const getWeatherData = (city) => {
+        const url = `${api.base}?q=${city}&units=metric&appid=${api.key}`;
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => updateUI(data));
+      };
       const searchBtn = document.getElementById("search-button");
       searchBtn.addEventListener("click", function () {
-        let cityInput = document.getElementById("city-input").value;
-        document.getElementById("city-name").innerHTML = cityInput;
+        const inputCity = document.getElementById("city-input").value;
+        getWeatherData(inputCity);
       });
+      const updateUI = (data) => {
+        document.getElementById("city-name").innerText =
+          data.name || "Unknown Location!";
+        document.getElementById("show_temperature").innerText = data.main.temp;
+        document.getElementById("weather_status").innerText =
+          data.weather[0].main;
+        // document
+        //   .getElementById("icon")
+        //   .setAttribute(
+        //     "src",
+        //     `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+        //   );
+        document.getElementById("city-input").value = "";
+      };
+      getWeatherData("Dhaka");
     </script>
   </body>
 </html>
